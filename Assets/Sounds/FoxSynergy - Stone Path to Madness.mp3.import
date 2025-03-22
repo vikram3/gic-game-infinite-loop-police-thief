@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/FoxSynergy - Stone Path to Madness.mp3-a640921e968992143afa9f614537b6c5.mp3str"
+
+[deps]
+
+source_file="res://Assets/Sounds/FoxSynergy - Stone Path to Madness.mp3"
+dest_files=[ "res://.import/FoxSynergy - Stone Path to Madness.mp3-a640921e968992143afa9f614537b6c5.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://Scripts/ThiefCar.gd" type="Script" id=1]
 [ext_resource path="res://assets/IsoTruck/carRed6_007.png" type="Texture" id=2]
@@ -10,6 +10,8 @@
 [ext_resource path="res://assets/IsoTruck/carRed6_000.png" type="Texture" id=8]
 [ext_resource path="res://assets/IsoTruck/carRed6_006.png" type="Texture" id=9]
 [ext_resource path="res://assets/effects/Smoke &amp; Fire.png" type="Texture" id=10]
+[ext_resource path="res://Assets/Sounds/engine-loop-1.wav" type="AudioStream" id=11]
+[ext_resource path="res://Assets/Sounds/loop_0.wav" type="AudioStream" id=12]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -99,31 +101,41 @@ shape = SubResource( 2 )
 [node name="Tween" type="Tween" parent="."]
 
 [node name="TrailEffect" type="CPUParticles2D" parent="."]
-visible = false
 rotation = -1.57079
 emitting = false
 amount = 1
-lifetime = 0.3
+lifetime = 0.01
 one_shot = true
 texture = ExtResource( 10 )
 
 [node name="MoveSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 11 )
+volume_db = -20.0
 
 [node name="InvisibilityEffect" type="CPUParticles2D" parent="."]
 visible = false
 material = SubResource( 4 )
 emitting = false
 amount = 1
+lifetime = 0.01
 one_shot = true
 
 [node name="SpecialTimer" type="Timer" parent="."]
+wait_time = 5.0
 
 [node name="SpecialSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 12 )
+volume_db = -20.0
 
 [node name="BoostSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 12 )
+volume_db = -20.0
 
 [node name="CaughtSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 12 )
+volume_db = -10.0
 
 [node name="ChaseTimer" type="Timer" parent="."]
 
 [connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]
+[connection signal="timeout" from="SpecialTimer" to="." method="_on_SpecialTimer_timeout"]

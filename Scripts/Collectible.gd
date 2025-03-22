@@ -38,7 +38,7 @@ func collect():
 	if collected:
 		return {
 			"type": type,
-			"value": 0  # Return zero value instead of null
+			"value": 0
 		}
 		
 	collected = true
@@ -54,7 +54,6 @@ func collect():
 	if has_node("DespawnTimer"):
 		$DespawnTimer.start(1.0)
 	
-	# Always return a valid dictionary
 	return {
 		"type": type,
 		"value": value
