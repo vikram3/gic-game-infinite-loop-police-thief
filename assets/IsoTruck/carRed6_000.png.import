@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/carRed6_000.png-00fc8cff9f74b5122425ec30227c3dce.stex"
+path="res://.import/carRed6_000.png-f2b829633b8a750cea120fa602ad8fbe.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/IsoTruck/carRed6_000.png"
-dest_files=[ "res://.import/carRed6_000.png-00fc8cff9f74b5122425ec30227c3dce.stex" ]
+source_file="res://Assets/IsoTruck/carRed6_000.png"
+dest_files=[ "res://.import/carRed6_000.png-f2b829633b8a750cea120fa602ad8fbe.stex" ]
 
 [params]
 

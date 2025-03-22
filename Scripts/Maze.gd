@@ -10,8 +10,6 @@ const CHUNK_SIZE = 4
 const VISIBLE_CHUNKS = 4 # How many chunks to keep loaded
 const GENERATION_DISTANCE = 3  # How far ahead to generate chunks
 
-onready var region_manager = RegionManager.new()
-
 var cell_walls = {
 	Vector2(0, -1): N, 
 	Vector2(1, 0): E,
@@ -29,7 +27,6 @@ var chase_time = 0
 var role_switch_timer = 0
 var MAX_ROLE_TIME = 30.0  # Switch roles after 30 seconds
 
-onready var navigation = $Navigation2D
 # References to nodes
 onready var Map = $TileMap
 onready var thief = $ThiefCar
@@ -42,65 +39,42 @@ onready var switch_sound = $SwitchRoleSound
 onready var chase_sound = $ChaseSound
 onready var score_sound = $ScoreSound
 
-
-var debug_mode = false
-
-func _input(event):
-	if event is InputEventKey and event.pressed:
-		if event.scancode == KEY_F1:
-			debug_mode = !debug_mode
-			navigation.visible = debug_mode
-
 func _ready():
 	print("Game starting...")
 	randomize()
-	
-	if not has_node("ThiefCar") or not has_node("PoliceCar"):
-		push_error("Missing ThiefCar or PoliceCar nodes")
-		return
-	if not Map:
-		push_error("TileMap not found")
-		return
-	
+	is_player_thief = true
+	# Basic setup without complex operations
 	$UILayer/UI.max_role_time = MAX_ROLE_TIME
+	
+	# Set up initial game state with minimal logic
 	thief.map = Map
 	police.map = Map
 	
+	# Initial positions close to origin
 	thief.map_pos = Vector2(0, 0)
 	police.map_pos = Vector2(2, 2)
+	
 	thief.position = Map.map_to_world(thief.map_pos) + Vector2(0, 20)
 	police.position = Map.map_to_world(police.map_pos) + Vector2(0, 20)
 	
-	# Generate initial map and navigation
+	# Generate minimal initial map
 	for x in range(-2, 3):
 		for y in range(-2, 3):
 			var cell = Vector2(x, y)
 			generate_tile(cell)
 	
+	# Mark initial chunks as generated
 	var chunk_pos = Vector2(0, 0)
 	chunk_registry[chunk_pos] = true
 	active_chunks.append(chunk_pos)
-	create_navigation_polygon(chunk_pos)  # Generate navigation for initial chunk
 	
+	# Set up camera
 	update_camera()
 	$BackgroundMusic.play()
 	print("Initialization complete")
-	
-	if not has_node("Navigation2D"):
-		var nav = Navigation2D.new()
-		nav.name = "Navigation2D"
-		add_child(nav)
-		navigation = nav
 
 func _process(delta):
-	# Update role switch timer
-	role_switch_timer += delta
-	if role_switch_timer >= MAX_ROLE_TIME:
-		switch_roles()
-		role_switch_timer = 0
-	
-	# Update UI
-	UI.update_timer(MAX_ROLE_TIME - role_switch_timer)
+	# Update UI elements regardless of role
 	UI.update_score(score)
 	
 	# Update chase time for more dynamic AI
@@ -114,7 +88,19 @@ func _process(delta):
 	
 	# Update camera position
 	update_camera()
-
+	
+	if is_player_thief:
+		# Show countdown timer when playing as thief
+		role_switch_timer += delta
+		UI.update_timer(MAX_ROLE_TIME - role_switch_timer)
+		if role_switch_timer >= MAX_ROLE_TIME:
+			# If thief survives for the full time, switch roles
+			switch_roles()
+			role_switch_timer = 0
+	else:
+		# No countdown when playing as police - must catch thief to switch
+		UI.update_timer(MAX_ROLE_TIME) # Keep timer full
+		
 func update_camera():
 	# Camera follows the player-controlled character
 	var target = thief if is_player_thief else police
@@ -156,95 +142,32 @@ func get_chunk_from_map_pos(map_pos):
 	var chunk_y = floor(map_pos.y / CHUNK_SIZE)
 	return Vector2(chunk_x, chunk_y)
 
-# Add this to your main game script
-
-# Create a NavigationPolygonInstance from tile data
-func create_navigation_polygon(chunk_pos):
-	var start_x = chunk_pos.x * CHUNK_SIZE
-	var start_y = chunk_pos.y * CHUNK_SIZE
-	
-	var nav_poly_instance = NavigationPolygonInstance.new()
-	var nav_poly = NavigationPolygon.new()
-	
-	var tile_size = 64
-	var chunk_boundary = PoolVector2Array([
-		Vector2(start_x * tile_size, start_y * tile_size),
-		Vector2((start_x + CHUNK_SIZE) * tile_size, start_y * tile_size),
-		Vector2((start_x + CHUNK_SIZE) * tile_size, (start_y + CHUNK_SIZE) * tile_size),
-		Vector2(start_x * tile_size, (start_y + CHUNK_SIZE) * tile_size)
-	])
-	nav_poly.add_outline(chunk_boundary)
-	
-	for x in range(start_x, start_x + CHUNK_SIZE):
-		for y in range(start_y, start_y + CHUNK_SIZE):
-			var cell_pos = Vector2(x, y)
-			var cell_value = Map.get_cellv(cell_pos)
-			if cell_value != -1:
-				add_wall_obstacles(nav_poly, cell_pos, cell_value)
-	
-	nav_poly.make_polygons_from_outlines()
-	nav_poly_instance.navpoly = nav_poly
-	navigation.add_child(nav_poly_instance)
-	
-	return nav_poly_instance
-
-func add_wall_obstacles(nav_poly, cell_pos, cell_value):
-	var cell_size = 64
-	var x = cell_pos.x * cell_size
-	var y = cell_pos.y * cell_size
-	
-	if cell_value & N:
-		var wall = PoolVector2Array([
-			Vector2(x, y),
-			Vector2(x + cell_size, y),
-			Vector2(x + cell_size, y + 5),
-			Vector2(x, y + 5)
-		])
-		nav_poly.add_outline(wall)
-	
-	if cell_value & E:
-		var wall = PoolVector2Array([
-			Vector2(x + cell_size - 5, y),
-			Vector2(x + cell_size, y),
-			Vector2(x + cell_size, y + cell_size),
-			Vector2(x + cell_size - 5, y + cell_size)
-		])
-		nav_poly.add_outline(wall)
-	
-	if cell_value & S:
-		var wall = PoolVector2Array([
-			Vector2(x, y + cell_size - 5),
-			Vector2(x + cell_size, y + cell_size - 5),
-			Vector2(x + cell_size, y + cell_size),
-			Vector2(x, y + cell_size)
-		])
-		nav_poly.add_outline(wall)
-	
-	if cell_value & W:
-		var wall = PoolVector2Array([
-			Vector2(x, y),
-			Vector2(x + 5, y),
-			Vector2(x + 5, y + cell_size),
-			Vector2(x, y + cell_size)
-		])
-		nav_poly.add_outline(wall)
-
 func check_and_generate_chunks():
+	# Generate chunks around BOTH cars, not just the player-controlled one
 	var thief_chunk = get_chunk_from_map_pos(thief.map_pos)
 	var police_chunk = get_chunk_from_map_pos(police.map_pos)
 	
-	# Register current positions with region manager
-	region_manager.register_chunk(thief_chunk)
-	region_manager.register_chunk(police_chunk)
+	# Process thief's surrounding chunks
+	for x in range(-GENERATION_DISTANCE, GENERATION_DISTANCE + 1):
+		for y in range(-GENERATION_DISTANCE, GENERATION_DISTANCE + 1):
+			var check_chunk = Vector2(thief_chunk.x + x, thief_chunk.y + y)
+			
+			# If this chunk doesn't exist, generate it
+			if not chunk_registry.has(check_chunk):
+				generate_chunk(check_chunk)
+				chunk_registry[check_chunk] = true
+				active_chunks.append(check_chunk)
 	
-	# Get all chunks that should be active based on regions
-	var chunks_to_process = region_manager.get_active_chunks([thief_chunk, police_chunk], GENERATION_DISTANCE)
-	
-	for chunk_pos in chunks_to_process:
-		if not chunk_registry.has(chunk_pos):
-			generate_chunk(chunk_pos)
-			chunk_registry[chunk_pos] = true
-			active_chunks.append(chunk_pos)
+	# Process police's surrounding chunks
+	for x in range(-GENERATION_DISTANCE, GENERATION_DISTANCE + 1):
+		for y in range(-GENERATION_DISTANCE, GENERATION_DISTANCE + 1):
+			var check_chunk = Vector2(police_chunk.x + x, police_chunk.y + y)
+			
+			# If this chunk doesn't exist, generate it
+			if not chunk_registry.has(check_chunk):
+				generate_chunk(check_chunk)
+				chunk_registry[check_chunk] = true
+				active_chunks.append(check_chunk)
 
 # Also update the cleanup function to consider both cars' positions
 func cleanup_old_chunks():
@@ -269,9 +192,8 @@ func cleanup_old_chunks():
 		# Remove from active chunks list
 		active_chunks.erase(chunk)
 
-# Modify your generate_chunk function
 func generate_chunk(chunk_pos):
-	# Generate tiles for the chunk
+	# Generate all tiles for a chunk
 	var start_x = chunk_pos.x * CHUNK_SIZE
 	var start_y = chunk_pos.y * CHUNK_SIZE
 	
@@ -283,9 +205,6 @@ func generate_chunk(chunk_pos):
 	
 	# Add some random obstacles or special tiles
 	add_chunk_features(chunk_pos)
-	
-	# Create navigation for this chunk
-	create_navigation_polygon(chunk_pos)
 
 func add_chunk_features(chunk_pos):
 	# Add special features like obstacles, speed boosts, or score items
@@ -343,12 +262,10 @@ func clear_chunk(chunk_pos):
 			Map.set_cellv(Vector2(x, y), -1)
 	
 	# Also remove any collectibles in this chunk
-	for child in navigation.get_children():
-		if child is NavigationPolygonInstance:
-			var poly_pos = child.position
-			var poly_chunk = get_chunk_from_map_pos(Vector2(poly_pos.x / 64, poly_pos.y / 64))
-			
-			if poly_chunk == chunk_pos:
+	for child in get_children():
+		if child.has_method("get_map_pos"):
+			var collectible_chunk = get_chunk_from_map_pos(child.map_pos)
+			if collectible_chunk == chunk_pos:
 				child.queue_free()
 
 func generate_tile(cell, depth = 0):
@@ -400,7 +317,6 @@ func find_valid_tiles(cell):
 		if is_match and not i in valid_tiles:
 			valid_tiles.append(i)
 	return valid_tiles
-
 func switch_roles():
 	is_player_thief = !is_player_thief
 	
@@ -416,11 +332,17 @@ func switch_roles():
 	thief.get_node("AnimatedSprite").animation = police.get_node("AnimatedSprite").animation
 	police.get_node("AnimatedSprite").animation = temp_sprite
 	
-# Reset AI timers when roles switch
+	# Reset AI timers when roles switch
 	if is_player_thief:
 		police.chase_timer = 0  # Reset police AI timer when switching to thief
+		# Play capture sound when player becomes thief after being captured
+		if role_switch_timer > 0:
+			$CaptureSound.play()
 	else:
 		thief.chase_timer = 0  # Reset thief AI timer when switching to police
+	
+	# Explicitly reset the role timer when switching roles
+	role_switch_timer = 0
 	
 	# Adjust AI difficulty based on chase time
 	if chase_time > 60:  # After 1 minute, make AI more aggressive
@@ -441,3 +363,24 @@ func extend_role_time(seconds):
 	role_switch_timer -= seconds
 	if role_switch_timer < 0:
 		role_switch_timer = 0
+		
+func on_thief_caught():
+	# Visual and audio feedback
+	var catch_effect = preload("res://Effects/CatchEffect.tscn").instance()
+	catch_effect.position = thief.position
+	add_child(catch_effect)
+	
+	# Switch roles after a short delay
+	yield(get_tree().create_timer(0.5), "timeout")
+	switch_roles()
+	
+	# Add points for catching thief
+	if !is_player_thief:  # Player was police and caught thief
+		calculate_catch_bonus()
+	
+func calculate_catch_bonus():
+	# More points for faster catch
+	var time_ratio = 1.0 - (role_switch_timer / MAX_ROLE_TIME)
+	var bonus_points = int(100 * time_ratio)
+	score += bonus_points
+	UI.show_message("Quick Catch Bonus: " + str(bonus_points) + " points!", 2.0)

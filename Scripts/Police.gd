@@ -44,12 +44,7 @@ func _ready():
 	
 	# Set up the siren light
 	$SirenLight.visible = true
-	if not map:
-		map = get_parent().get_node("TileMap")
-		if not map:
-			push_error("PoliceCar: Could not find TileMap in parent node!")
-			
-				
+
 func _process(delta):
 	# Handle special ability cooldown
 	if special_cooldown > 0:
@@ -117,35 +112,40 @@ func get_distance_to_thief():
 	var thief_pos = get_parent().thief.map_pos
 	return (thief_pos - map_pos).length()
 
-# In your PoliceCar script (second document)
-
 func chase_thief_advanced():
 	var thief_pos = get_parent().thief.map_pos
 	
+	# If thief is invisible, use last known position or patrol
 	if get_parent().thief.special_active:
 		patrol_random()
 		return
 	
-	var start_world_pos = position
-	var end_world_pos = map.map_to_world(thief_pos) + Vector2(0, 20)
+	# Check if we need to calculate a new path
+	if ai_path.empty() or rand_range(0, 1) < 0.2:  # 20% chance to recalculate path for unpredictability
+		ai_path = find_path_to_thief(thief_pos)
 	
-	var path = get_parent().navigation.get_simple_path(start_world_pos, end_world_pos, true)
-	if path.size() > 1:
-		var next_point = path[1]
-		var next_map_pos = map.world_to_map(next_point - Vector2(0, 20))
+	# If we have a path, follow it
+	if not ai_path.empty():
+		var next_step = ai_path[0]
 		var dir_to_move = null
+		
+		# Convert next position to direction
 		for dir in moves.keys():
-			if map_pos + moves[dir] == next_map_pos:
+			if map_pos + moves[dir] == next_step:
 				dir_to_move = dir
 				break
+		
 		if dir_to_move != null and can_move(dir_to_move):
 			move(dir_to_move)
+			ai_path.pop_front()
 			frustration = max(0, frustration - 1)
 		else:
-			simple_chase(thief_pos)
+			# Path is blocked, recalculate
+			ai_path.clear()
 			frustration += 1
 	else:
-		simple_chase(thief_pos)  # Fallback to simple chase if navigation fails
+		# Fallback to simple chase if no path found
+		simple_chase(thief_pos)
 		frustration += 2
 
 func simple_chase(thief_pos):

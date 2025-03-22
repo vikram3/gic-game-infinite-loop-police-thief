@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/mediORT.png-898bdfb9c2bc723e4e56aa18bed5a256.stex"
+path="res://.import/mediORT.png-5458449a820a87e67fb772ca3f4395b8.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Collectibles/mediORT.png"
-dest_files=[ "res://.import/mediORT.png-898bdfb9c2bc723e4e56aa18bed5a256.stex" ]
+source_file="res://Assets/Collectibles/mediORT.png"
+dest_files=[ "res://.import/mediORT.png-5458449a820a87e67fb772ca3f4395b8.stex" ]
 
 [params]
 

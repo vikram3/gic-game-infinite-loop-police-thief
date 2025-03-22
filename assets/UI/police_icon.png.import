@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/police_icon.png-d5e9285142cded8397bcd1a61a78c59e.stex"
+path="res://.import/police_icon.png-7a4edb74afb9a990b3dcb40bf218352c.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/UI/police_icon.png"
-dest_files=[ "res://.import/police_icon.png-d5e9285142cded8397bcd1a61a78c59e.stex" ]
+source_file="res://Assets/UI/police_icon.png"
+dest_files=[ "res://.import/police_icon.png-7a4edb74afb9a990b3dcb40bf218352c.stex" ]
 
 [params]
 

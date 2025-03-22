@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/crossroadNES.png-454b80ec81faf7b9eb4976a766432be6.stex"
+path="res://.import/crossroadNES.png-048f3c4e5155bbbb605578c9e2e3f012.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/isometric_roads/crossroadNES.png"
-dest_files=[ "res://.import/crossroadNES.png-454b80ec81faf7b9eb4976a766432be6.stex" ]
+source_file="res://Assets/isometric_roads/crossroadNES.png"
+dest_files=[ "res://.import/crossroadNES.png-048f3c4e5155bbbb605578c9e2e3f012.stex" ]
 
 [params]
 

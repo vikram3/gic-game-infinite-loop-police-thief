@@ -40,10 +40,7 @@ func _ready():
 		connect("area_entered", self, "_on_ThiefCar_area_entered")
 	# Initialize the animated sprite
 	$AnimatedSprite.play("s")
-	if not map:
-			map = get_parent().get_node("TileMap")
-			if not map:
-				push_error("ThiefCar: Could not find TileMap in parent node!")
+
 func _process(delta):
 	# Handle special ability cooldown
 	if special_cooldown > 0:
@@ -66,101 +63,14 @@ func _process(delta):
 		run_away_from_player(delta)
 
 # Add this new function
-# For the ThiefCar, add a function to occasionally do something unexpected
-func act_unpredictably():
-	# 20% chance to do something unpredictable
-	if randf() < 0.2:
-		# Choose a random action
-		var action = randi() % 3
-		match action:
-			0:  # Sprint straight away
-				var dir = null
-				if can_move(N): dir = N
-				elif can_move(E): dir = E
-				elif can_move(S): dir = S
-				elif can_move(W): dir = W
-				
-				if dir != null:
-					move(dir)
-					# If can move again in same direction, do it
-					if can_move(dir):
-						yield(get_tree().create_timer(0.2/speed), "timeout")
-						move(dir)
-				
-			1:  # Use special ability if available
-				if special_cooldown <= 0:
-					activate_special()
-				
-			2:  # Make a sharp turn
-				var dir_options = []
-				for dir in [N, E, S, W]:
-					if can_move(dir):
-						dir_options.append(dir)
-				if not dir_options.empty():
-					move(dir_options[randi() % dir_options.size()])
-		return true
-	return false
-	
 func run_away_from_player(delta):
-	chase_timer += delta
+	# Simple AI to run away from the police
+	var police_pos = get_parent().police.map_pos
 	
-	# Only update path periodically to avoid constant recalculation
-	if chase_timer >= 1.0:
-		chase_timer = 0.0
-		
-		var police_pos = get_parent().police.map_pos
-		var police_world_pos = get_parent().map.map_to_world(police_pos) + Vector2(0, 20)
-		var my_world_pos = position
-		
-		# Find escape points in different directions
-		var escape_points = []
-		var max_distance = 5  # How far to look for escape points
-		
-		# Try to find escape points in all four directions
-		for dir in [N, E, S, W]:
-			var test_pos = map_pos + (moves[dir] * max_distance)
-			var test_world_pos = get_parent().map.map_to_world(test_pos) + Vector2(0, 20)
-			
-			# Calculate distance from police to this point
-			var dist_to_police = (test_world_pos - police_world_pos).length()
-			
-			# Check if this point is reachable
-			var path = get_parent().navigation.get_simple_path(my_world_pos, test_world_pos, true)
-			
-			if path.size() > 1 and dist_to_police > 200:  # Minimum safe distance
-				escape_points.append({
-					"pos": test_pos,
-					"dist": dist_to_police,
-					"path": path
-				})
-		
-		# If we have escape points, choose the one furthest from police
-		if not escape_points.empty():
-			escape_points.sort_custom(self, "_sort_by_distance")
-			var best_escape = escape_points[0]
-			
-			# Get next point in the path
-			var next_point = best_escape.path[1]
-			var next_map_pos = get_parent().map.world_to_map(next_point - Vector2(0, 20))
-			
-			# Determine direction to move
-			for dir in moves.keys():
-				if map_pos + moves[dir] == next_map_pos:
-					move(dir)
-					return
-		
-		# Fallback to simple avoidance if no good escape found
-		simple_avoid(police_pos)
-	
-# Helper function to sort escape points
-func _sort_by_distance(a, b):
-	return a.dist > b.dist  # Sort from furthest to closest
-
-# Simple avoidance logic if navigation fails
-func simple_avoid(police_pos):
-	# Your existing avoidance code...
-	# This is the current run_away_from_player logic
+	# Calculate vector from police to thief
 	var direction = map_pos - police_pos
+	
+	# Choose direction to move (away from police)
 	var dir = null
 	
 	# Horizontal or vertical movement based on which distance is greater
@@ -303,9 +213,11 @@ func check_for_collectibles():
 			elif item_data.type == "time":
 				get_parent().extend_role_time(item_data.value)
 
+# Modify the _on_ThiefCar_area_entered function
 func _on_ThiefCar_area_entered(area):
 	if area == get_parent().police and not special_active:
-		get_parent().switch_roles()
+		# Trigger role switch regardless of who's controlling whom
+		get_parent().on_thief_caught()
 		# Play catch sound
 		$CaughtSound.play()
 

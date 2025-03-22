@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/crossroadNSW.png-1d2841d49a59304cd11e374c76285ccb.stex"
+path="res://.import/crossroadNSW.png-2c3e810980b6e9c3683ba2cd57b4e8d0.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/isometric_roads/crossroadNSW.png"
-dest_files=[ "res://.import/crossroadNSW.png-1d2841d49a59304cd11e374c76285ccb.stex" ]
+source_file="res://Assets/isometric_roads/crossroadNSW.png"
+dest_files=[ "res://.import/crossroadNSW.png-2c3e810980b6e9c3683ba2cd57b4e8d0.stex" ]
 
 [params]
 

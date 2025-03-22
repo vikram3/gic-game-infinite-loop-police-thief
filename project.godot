@@ -13,15 +13,9 @@ _global_script_classes=[ {
 "class": "Collectible",
 "language": "GDScript",
 "path": "res://Scripts/Collectible.gd"
-}, {
-"base": "Node",
-"class": "RegionManager",
-"language": "GDScript",
-"path": "res://Scripts/RegionManager.gd"
 } ]
 _global_script_class_icons={
-"Collectible": "",
-"RegionManager": ""
+"Collectible": ""
 }
 
 [application]
@@ -74,5 +68,4 @@ special={
 
 [rendering]
 
-quality/driver/driver_name="GLES2"
-environment/default_environment="res://assets/tiles/default_env.tres"
+environment/default_environment="res://default_env.tres"

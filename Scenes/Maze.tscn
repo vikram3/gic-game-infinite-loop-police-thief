@@ -1,6 +1,6 @@
 [gd_scene load_steps=78 format=2]
 
-[ext_resource path="res://assets/tiles/iso_roads.tres" type="TileSet" id=1]
+[ext_resource path="res://iso_roads.tres" type="TileSet" id=1]
 [ext_resource path="res://Scenes/TheifCar.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Police.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scripts/Maze.gd" type="Script" id=4]
@@ -529,4 +529,4 @@ zoom = Vector2( 0.5, 0.5 )
 
 [node name="SwitchEffect" type="CPUParticles2D" parent="."]
 
-[node name="Navigation2D" type="Navigation2D" parent="."]
+[node name="CaptureSound" type="AudioStreamPlayer2D" parent="."]

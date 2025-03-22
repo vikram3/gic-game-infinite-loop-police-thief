@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/spr_smoke_strip24.png-647bc7d7d818d46da4fbbcda4899dcb9.stex"
+path="res://.import/spr_smoke_strip24.png-44e551bbdd50b9d8016f321594db45b9.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/effects/spr_smoke_strip24.png"
-dest_files=[ "res://.import/spr_smoke_strip24.png-647bc7d7d818d46da4fbbcda4899dcb9.stex" ]
+source_file="res://Assets/effects/spr_smoke_strip24.png"
+dest_files=[ "res://.import/spr_smoke_strip24.png-44e551bbdd50b9d8016f321594db45b9.stex" ]
 
 [params]
 

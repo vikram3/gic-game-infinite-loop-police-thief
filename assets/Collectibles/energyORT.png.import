@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/energyORT.png-a08d82f3789ef4e08a31dce0f9ab94ee.stex"
+path="res://.import/energyORT.png-2936863fb9d16326d0adec3a01585d6b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Collectibles/energyORT.png"
-dest_files=[ "res://.import/energyORT.png-a08d82f3789ef4e08a31dce0f9ab94ee.stex" ]
+source_file="res://Assets/Collectibles/energyORT.png"
+dest_files=[ "res://.import/energyORT.png-2936863fb9d16326d0adec3a01585d6b.stex" ]
 
 [params]
 

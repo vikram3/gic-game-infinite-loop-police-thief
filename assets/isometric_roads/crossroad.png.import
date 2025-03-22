@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/crossroad.png-f60ed11eab69175c392905a403204698.stex"
+path="res://.import/crossroad.png-0324160b32f018b6950f872abc031fd1.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/isometric_roads/crossroad.png"
-dest_files=[ "res://.import/crossroad.png-f60ed11eab69175c392905a403204698.stex" ]
+source_file="res://Assets/isometric_roads/crossroad.png"
+dest_files=[ "res://.import/crossroad.png-0324160b32f018b6950f872abc031fd1.stex" ]
 
 [params]
 

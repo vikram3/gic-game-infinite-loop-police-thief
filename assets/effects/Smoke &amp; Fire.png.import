@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Smoke &amp; Fire.png-c23495da6dfdfc85dada32289e36e040.stex"
+path="res://.import/Smoke &amp; Fire.png-4422d57a83090940c61e8986c235f3f5.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/effects/Smoke &amp; Fire.png"
-dest_files=[ "res://.import/Smoke &amp; Fire.png-c23495da6dfdfc85dada32289e36e040.stex" ]
+source_file="res://Assets/effects/Smoke &amp; Fire.png"
+dest_files=[ "res://.import/Smoke &amp; Fire.png-4422d57a83090940c61e8986c235f3f5.stex" ]
 
 [params]
 

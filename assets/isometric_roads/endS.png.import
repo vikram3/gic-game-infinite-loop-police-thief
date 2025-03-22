@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/endS.png-cb5fc148a652e7a29a95dd6cad845c74.stex"
+path="res://.import/endS.png-32d745be55c70897a8831147d01715b6.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/isometric_roads/endS.png"
-dest_files=[ "res://.import/endS.png-cb5fc148a652e7a29a95dd6cad845c74.stex" ]
+source_file="res://Assets/isometric_roads/endS.png"
+dest_files=[ "res://.import/endS.png-32d745be55c70897a8831147d01715b6.stex" ]
 
 [params]
 

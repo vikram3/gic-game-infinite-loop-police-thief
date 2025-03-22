@@ -19,7 +19,10 @@ func _ready():
 	score_label.text = "0"
 	timer_bar.value = 100
 	update_role(true)  # Start as thief by default
+	
+	# Force initial message visibility
 	messages_panel.visible = false
+	show_message("Game started! You're the THIEF!", 3.0)
 
 func _process(delta):
 	# Animate score counting up
@@ -52,27 +55,41 @@ func update_role(is_thief):
 		role_icon.texture = preload("res://Assets/UI/thief_icon.jpg")
 		
 		# Show tip message
-		show_message("You're the THIEF! Escape the police and collect coins!")
+		show_message("You're the THIEF! Escape the police and collect coins!", 3.0)
 	else:
 		role_indicator.text = "POLICE"
 		role_indicator.modulate = Color(0.2, 0.4, 1.0)  # Blue for police
 		role_icon.texture = preload("res://Assets/UI/police_icon.png")
 		
 		# Show tip message
-		show_message("You're the POLICE! Catch the thief!")
+		show_message("You're the POLICE! Catch the thief!", 3.0)
+	
+	# Ensure the role panel is visible
+	$RolePanel.visible = true
 	
 	# Play role switch animation
 	$RoleAnimation.play("RoleAnimation")
 
+# Modify the show_message function
 func show_message(text, duration=3.0):
-	# Add message to queue
-	messages_queue.append({"text": text, "duration": duration})
+	print("UI: Showing message: ", text)
+	message_label.text = text
+	messages_panel.visible = true
+	messages_panel.modulate.a = 1.0
 	
-	# If not currently showing a message, show this one
-	if not messages_panel.visible:
-		display_next_message()
+	# Cancel any previous timer
+	message_timer.stop()
+	
+	# Set timer for message duration
+	message_timer.wait_time = duration
+	message_timer.start()
+
+func _on_MessageTimer_timeout():
+	messages_panel.visible = false
 
 func display_next_message():
+	messages_panel.modulate.a = 1.0
+	messages_panel.visible = true
 	if messages_queue.empty():
 		messages_panel.visible = false
 		return
@@ -81,16 +98,15 @@ func display_next_message():
 	message_label.text = message.text
 	messages_panel.visible = true
 	
+	# Reset any ongoing animations
+	$MessageAnimation.stop()
+	
 	# Start fade-in animation
 	$MessageAnimation.play("fade_in")
 	
 	# Set timer for message duration
 	message_timer.wait_time = message.duration
 	message_timer.start()
-
-func _on_MessageTimer_timeout():
-	# Fade out current message
-	$MessageAnimation.play("fade_out")
 
 func _on_MessageAnimation_animation_finished(anim_name):
 	if anim_name == "fade_out":

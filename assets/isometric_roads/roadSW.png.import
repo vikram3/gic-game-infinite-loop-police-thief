@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/roadSW.png-553bb33e56d6d56d6a2d8ec086cf8d7a.stex"
+path="res://.import/roadSW.png-1f81130cdb1ff5140e2d0302e304d553.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/isometric_roads/roadSW.png"
-dest_files=[ "res://.import/roadSW.png-553bb33e56d6d56d6a2d8ec086cf8d7a.stex" ]
+source_file="res://Assets/isometric_roads/roadSW.png"
+dest_files=[ "res://.import/roadSW.png-1f81130cdb1ff5140e2d0302e304d553.stex" ]
 
 [params]
 

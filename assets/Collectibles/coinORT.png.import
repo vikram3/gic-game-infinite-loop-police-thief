@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/coinORT.png-78685f4890f4835bd2164e1f388ccc60.stex"
+path="res://.import/coinORT.png-48ee9fdbd39b601dd048a16fc4755c9c.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Collectibles/coinORT.png"
-dest_files=[ "res://.import/coinORT.png-78685f4890f4835bd2164e1f388ccc60.stex" ]
+source_file="res://Assets/Collectibles/coinORT.png"
+dest_files=[ "res://.import/coinORT.png-48ee9fdbd39b601dd048a16fc4755c9c.stex" ]
 
 [params]
 
