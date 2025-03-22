@@ -15,8 +15,8 @@ var moves = {
 
 var map = null
 var map_pos = Vector2()
-var base_speed = 0.85  # Slightly slower than thief by default
-var speed = 0.85
+var base_speed = 0.4  # Slightly slower than thief by default
+var speed = 0.4
 var moving = false
 var chase_timer = 0.0
 var frustration = 0.0  # Increases when police can't catch thief
@@ -88,25 +88,26 @@ func handle_player_input():
 		move(dir)
 
 func run_police_ai(delta):
+	# Update timer for other AI features, but don't use it to gate movement
 	chase_timer += delta
 	
 	# Increase difficulty over time
 	difficulty_scaling = min(1.5, 1.0 + get_parent().chase_time / 120.0)
 	
-	# More aggressive movement if thief has been elusive for too long
-	if frustration > 20:
-		if chase_timer >= 0.7 / difficulty_scaling:  # Faster decisions when frustrated
-			chase_timer = 0.0
-			chase_thief_advanced()
-			frustration = max(0, frustration - 5)  # Reduce frustration when taking action
+	# Check if we're currently moving
+	if not moving:
+		# Just initiate movement immediately without waiting for timer thresholds
+		chase_thief_advanced()
+		
+		# Use special ability when appropriate
+		if special_cooldown <= 0 and difficulty_scaling >= 1.3 and get_distance_to_thief() > 5:
+			activate_special()
+			
+	# Update frustration level - still used for decision-making
+	if get_distance_to_thief() > 8:
+		frustration += delta  # Increase frustration gradually
 	else:
-		if chase_timer >= 1.0 / difficulty_scaling:  # Standard AI move rate
-			chase_timer = 0.0
-			chase_thief_advanced()
-	
-	# Use special ability more aggressively at higher difficulties
-	if special_cooldown <= 0 and difficulty_scaling >= 1.3 and get_distance_to_thief() > 5:
-		activate_special()
+		frustration = max(0, frustration - delta)  # Decrease when closer
 
 func get_distance_to_thief():
 	var thief_pos = get_parent().thief.map_pos
@@ -120,8 +121,9 @@ func chase_thief_advanced():
 		patrol_random()
 		return
 	
-	# Check if we need to calculate a new path
-	if ai_path.empty() or rand_range(0, 1) < 0.2:  # 20% chance to recalculate path for unpredictability
+	# Recalculate path less frequently to reduce jitter
+	# Only recalculate when we reach a waypoint or don't have a path
+	if ai_path.empty() or ai_path.size() <= 1:
 		ai_path = find_path_to_thief(thief_pos)
 	
 	# If we have a path, follow it
@@ -146,85 +148,106 @@ func chase_thief_advanced():
 	else:
 		# Fallback to simple chase if no path found
 		simple_chase(thief_pos)
-		frustration += 2
+		frustration += 1
+		
+func search_in_spiral():
+	# This creates a spiral search pattern
+	var spiral_directions = [E, S, W, W, N, N, E, E, E, S, S, S, W, W, W, W]
+	var spiral_index = int(chase_timer * 2) % spiral_directions.size()
+	var search_dir = spiral_directions[spiral_index]
+	
+	# Try the suggested direction first
+	if can_move(search_dir):
+		move(search_dir)
+	else:
+		# Fall back to any available direction
+		patrol_random()
 
 func simple_chase(thief_pos):
 	var dx = thief_pos.x - map_pos.x
 	var dy = thief_pos.y - map_pos.y
 	
-	# Try to move directly toward thief
-	var tried_directions = []
+	# Try primary and secondary directions based on which axis has greater distance
+	var primary_dirs = []
+	var secondary_dirs = []
 	
-	# Try horizontal or vertical movement based on which distance is greater
 	if abs(dx) > abs(dy):
-		if dx > 0 and can_move(E):
-			move(E)
-		elif dx < 0 and can_move(W):
-			move(W)
-		elif dy > 0 and can_move(S):
-			move(S)
-		elif dy < 0 and can_move(N):
-			move(N)
-		else:
-			# Try any available direction
-			for dir in [N, E, S, W]:
-				if can_move(dir) and not dir in tried_directions:
-					move(dir)
-					break
-				tried_directions.append(dir)
+		# Prioritize horizontal movement
+		primary_dirs = [E if dx > 0 else W]
+		secondary_dirs = [S if dy > 0 else N]
 	else:
-		if dy > 0 and can_move(S):
-			move(S)
-		elif dy < 0 and can_move(N):
-			move(N)
-		elif dx > 0 and can_move(E):
-			move(E)
-		elif dx < 0 and can_move(W):
-			move(W)
-		else:
-			# Try any available direction
-			for dir in [N, E, S, W]:
-				if can_move(dir) and not dir in tried_directions:
-					move(dir)
-					break
-				tried_directions.append(dir)
+		# Prioritize vertical movement
+		primary_dirs = [S if dy > 0 else N]
+		secondary_dirs = [E if dx > 0 else W]
+	
+	# Try opposite directions as fallbacks
+	var fallback_dirs = [
+		opposite_direction(primary_dirs[0]),
+		opposite_direction(secondary_dirs[0])
+	]
+	
+	# Try directions in priority order
+	for dir in primary_dirs + secondary_dirs + fallback_dirs:
+		if can_move(dir):
+			move(dir)
+			return
+	
+	# If all else fails, move in any available direction
+	patrol_random()
 
 func find_path_to_thief(target_pos):
-	# Add a maximum iteration count to prevent infinite loops
-	var max_iterations = 100
+	# Increase maximum iterations for more complex paths
+	var max_iterations = 200
 	var iterations = 0
 	
-	# A* pathfinding to the thief
+	# A* pathfinding to the thief with improved heuristic
 	var open_set = [map_pos]
 	var came_from = {}
 	var g_score = {str(map_pos): 0}
-	var f_score = {str(map_pos): heuristic(map_pos, target_pos)}
+	var f_score = {str(map_pos): improved_heuristic(map_pos, target_pos)}
 	
 	while not open_set.empty() and iterations < max_iterations:
 		iterations += 1
 		var current = get_lowest_fscore_node(open_set, f_score)
 		
+		# Success: found the target
 		if current == target_pos:
 			return reconstruct_path(came_from, current)
 		
 		open_set.erase(current)
 		
+		# Check all four directions
 		for dir in moves.keys():
-			if can_move(dir):
+			# Only consider moves that are actually possible
+			if can_move_from_position(current, dir):
 				var neighbor = current + moves[dir]
 				var tentative_g = g_score[str(current)] + 1
 				
 				if not g_score.has(str(neighbor)) or tentative_g < g_score[str(neighbor)]:
 					came_from[str(neighbor)] = current
 					g_score[str(neighbor)] = tentative_g
-					f_score[str(neighbor)] = tentative_g + heuristic(neighbor, target_pos)
+					f_score[str(neighbor)] = tentative_g + improved_heuristic(neighbor, target_pos)
 					
 					if not neighbor in open_set:
 						open_set.append(neighbor)
 	
-	# No path found or max iterations reached, return empty path
+	# No path found or max iterations reached
+	# Return a partial path toward target if available
+	if not came_from.empty():
+		var furthest_point = find_furthest_point_toward_target(came_from, target_pos)
+		return reconstruct_path(came_from, furthest_point)
+	
 	return []
 
+func can_move_from_position(pos, dir):
+	var cell = map.get_cellv(pos)
+	# Generate the cell if it doesn't exist yet
+	if cell == -1:
+		get_parent().generate_tile(pos)
+		cell = map.get_cellv(pos)
+	
+	return not (cell & dir)
+	
 func get_lowest_fscore_node(nodes, f_scores):
 	var lowest_node = nodes[0]
 	var lowest_score = f_scores[str(lowest_node)]
@@ -237,8 +260,30 @@ func get_lowest_fscore_node(nodes, f_scores):
 	
 	return lowest_node
 
-func heuristic(a, b):
-	return abs(a.x - b.x) + abs(a.y - b.y)
+func improved_heuristic(a, b):
+	# Manhattan distance for basic estimation
+	var manhattan = abs(a.x - b.x) + abs(a.y - b.y)
+	
+	# Add a small random factor to break ties and prevent predictable paths
+	# This helps the AI explore slightly different paths even when options seem equal
+	var random_factor = randf() * 0.2
+	
+	return manhattan + random_factor
+	
+func find_furthest_point_toward_target(came_from, target_pos):
+	var best_distance = INF
+	var best_point = null
+	
+	for point_str in came_from.keys():
+		var point_parts = point_str.substr(1, point_str.length() - 2).split(", ")
+		var point = Vector2(float(point_parts[0]), float(point_parts[1]))
+		
+		var distance = (point - target_pos).length()
+		if distance < best_distance:
+			best_distance = distance
+			best_point = point
+	
+	return best_point if best_point != null else map_pos
 
 func reconstruct_path(came_from, current):
 	var path = [current]
@@ -264,6 +309,13 @@ func patrol_random():
 	if not available_dirs.empty():
 		var random_dir = available_dirs[randi() % available_dirs.size()]
 		move(random_dir)
+func opposite_direction(dir):
+	match dir:
+		N: return S
+		S: return N
+		E: return W
+		W: return E
+	return N  # Default fallback
 
 func move(dir):
 	if not can_move(dir):

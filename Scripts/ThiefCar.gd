@@ -5,6 +5,9 @@ const E = 0x2
 const S = 0x4
 const W = 0x8
 
+var previous_positions = []  # Add this as a class variable
+const MAX_MEMORY = 5  # Remember the last 5 positions
+
 var animations = {N: 'n', S: 's', E: 'e', W: 'w'}
 var moves = {
 	N: Vector2(0, -1),
@@ -59,59 +62,209 @@ func _process(delta):
 	if get_parent().is_player_thief and not moving:
 		handle_player_input()
 	# AI for computer-controlled mode
-	elif not get_parent().is_player_thief and not moving:
-		run_away_from_player(delta)
+	elif not get_parent().is_player_thief:
+		# Update chase timer regardless of movement status
+		chase_timer += delta
+		
+		# Only attempt to move if not already moving
+		if not moving and chase_timer >= 0.5:  # Make decision every 0.5 seconds
+			chase_timer = 0
+			run_away_from_player(delta)
 
-# Add this new function
 func run_away_from_player(delta):
-	# Simple AI to run away from the police
+	# More sophisticated AI to run away from the police
 	var police_pos = get_parent().police.map_pos
+	var distance = (police_pos - map_pos).length()
 	
 	# Calculate vector from police to thief
 	var direction = map_pos - police_pos
 	
-	# Choose direction to move (away from police)
-	var dir = null
+	# Try special ability if available and police is close
+	if special_cooldown <= 0 and distance < 3:
+		activate_special()
 	
-	# Horizontal or vertical movement based on which distance is greater
+	# Array of possible directions in order of preference
+	var possible_dirs = []
+	
+	# Prioritize directions that increase distance from police
+	if direction.x > 0 and can_move(E):
+		possible_dirs.append(E)
+	elif direction.x < 0 and can_move(W):
+		possible_dirs.append(W)
+		
+	if direction.y > 0 and can_move(S):
+		possible_dirs.append(S)
+	elif direction.y < 0 and can_move(N):
+		possible_dirs.append(N)
+	
+	# Add secondary directions (perpendicular to escape vector)
 	if abs(direction.x) > abs(direction.y):
-		# Move horizontally
-		if direction.x > 0 and can_move(E):
-			dir = E  # Move right if police is to the left
-		elif direction.x < 0 and can_move(W):
-			dir = W  # Move left if police is to the right
+		# Horizontal escape is primary, add vertical options as secondary
+		if can_move(N) and not N in possible_dirs:
+			possible_dirs.append(N)
+		if can_move(S) and not S in possible_dirs:
+			possible_dirs.append(S)
 	else:
-		# Move vertically
-		if direction.y > 0 and can_move(S):
-			dir = S  # Move down if police is above
-		elif direction.y < 0 and can_move(N):
-			dir = N  # Move up if police is below
+		# Vertical escape is primary, add horizontal options as secondary
+		if can_move(E) and not E in possible_dirs:
+			possible_dirs.append(E)
+		if can_move(W) and not W in possible_dirs:
+			possible_dirs.append(W)
 	
-	# If preferred direction is blocked, try the other axis
-	if dir == null or not can_move(dir):
-		if abs(direction.x) <= abs(direction.y):
-			# Try horizontal
-			if direction.x > 0 and can_move(E):
-				dir = E
-			elif direction.x < 0 and can_move(W):
-				dir = W
-		else:
-			# Try vertical
-			if direction.y > 0 and can_move(S):
-				dir = S
-			elif direction.y < 0 and can_move(N):
-				dir = N
+	# Even add opposite directions as last resort
+	for test_dir in [N, E, S, W]:
+		if can_move(test_dir) and not test_dir in possible_dirs:
+			possible_dirs.append(test_dir)
 	
-	# If still blocked, try any available direction
-	if dir == null or not can_move(dir):
-		for test_dir in [N, E, S, W]:
-			if can_move(test_dir):
-				dir = test_dir
+	# Move in the first available direction
+	if not possible_dirs.empty():
+		move(possible_dirs[0])
+	# If no direction is available (shouldn't happen), just wait
+
+func escape_from_police(police_pos):
+	# Calculate vector from police to thief
+	var direction = map_pos - police_pos
+	
+	# Get all possible moves
+	var possible_moves = []
+	var move_scores = {}
+	
+	for dir in [N, E, S, W]:
+		if can_move(dir):
+			var new_pos = map_pos + moves[dir]
+			
+			# Skip if we've been here recently (avoid loops)
+			if new_pos in previous_positions:
+				continue
+				
+			# Calculate new distance from police after this move
+			var new_distance = (police_pos - new_pos).length()
+			
+			# Score this move (higher is better)
+			var score = new_distance  # Base score is distance from police
+			
+			# Prefer moves that are in the general direction away from police
+			var dot_product = direction.normalized().dot(moves[dir].normalized())
+			score += dot_product * 2
+			
+			# Add some randomness to break patterns
+			score += randf() * 0.5
+			
+			possible_moves.append(dir)
+			move_scores[dir] = score
+	
+	# If we have moves available
+	if not possible_moves.empty():
+		# Find the move with the highest score
+		var best_dir = possible_moves[0]
+		var best_score = move_scores[best_dir]
+		
+		for dir in possible_moves:
+			if move_scores[dir] > best_score:
+				best_score = move_scores[dir]
+				best_dir = dir
+		
+		# Move in the chosen direction
+		move(best_dir)
+		
+		# Remember this position to avoid loops
+		previous_positions.append(map_pos)
+		if previous_positions.size() > MAX_MEMORY:
+			previous_positions.pop_front()
+	else:
+		# All directions blocked or would cause a loop
+		# Just move somewhere if possible, even if we've been there
+		for dir in [N, E, S, W]:
+			if can_move(dir):
+				move(dir)
 				break
+
+func explore_and_collect():
+	# Look for collectibles
+	var nearby_collectible = find_nearest_collectible()
 	
-	# Move in chosen direction
-	if dir != null:
-		move(dir)
+	if nearby_collectible:
+		# Move toward the collectible
+		move_toward_position(nearby_collectible.map_pos)
+	else:
+		# No collectibles nearby, just explore
+		explore_random()
+
+func find_nearest_collectible():
+	var nearest = null
+	var min_distance = 999
+	
+	for collectible in get_parent().get_children():
+		if collectible.has_method("collect"):
+			var distance = (collectible.map_pos - map_pos).length()
+			if distance < min_distance and distance < 8:  # Only consider nearby collectibles
+				min_distance = distance
+				nearest = collectible
+	
+	return nearest
+
+func move_toward_position(target_pos):
+	var direction = target_pos - map_pos
+	var possible_dirs = []
+	
+	# Determine which direction gets us closer
+	if abs(direction.x) > abs(direction.y):
+		# Try horizontal first
+		if direction.x > 0 and can_move(E): possible_dirs.append(E)
+		elif direction.x < 0 and can_move(W): possible_dirs.append(W)
+		
+		# Then vertical
+		if direction.y > 0 and can_move(S): possible_dirs.append(S)
+		elif direction.y < 0 and can_move(N): possible_dirs.append(N)
+	else:
+		# Try vertical first
+		if direction.y > 0 and can_move(S): possible_dirs.append(S)
+		elif direction.y < 0 and can_move(N): possible_dirs.append(N)
+		
+		# Then horizontal
+		if direction.x > 0 and can_move(E): possible_dirs.append(E)
+		elif direction.x < 0 and can_move(W): possible_dirs.append(W)
+	
+	# Try remaining directions if needed
+	for dir in [N, E, S, W]:
+		if can_move(dir) and not dir in possible_dirs:
+			possible_dirs.append(dir)
+	
+	if not possible_dirs.empty():
+		# Choose a random direction from our options
+		var chosen_dir = possible_dirs[randi() % possible_dirs.size()]
+		move(chosen_dir)
+		
+		# Remember this position
+		previous_positions.append(map_pos)
+		if previous_positions.size() > MAX_MEMORY:
+			previous_positions.pop_front()
+
+func explore_random():
+	var available_dirs = []
+	
+	# Prefer directions we haven't been to recently
+	for dir in [N, E, S, W]:
+		if can_move(dir):
+			var new_pos = map_pos + moves[dir]
+			if not new_pos in previous_positions:
+				available_dirs.append(dir)
+	
+	# If all directions have been visited recently, consider any direction
+	if available_dirs.empty():
+		for dir in [N, E, S, W]:
+			if can_move(dir):
+				available_dirs.append(dir)
+	
+	if not available_dirs.empty():
+		# Choose a random direction
+		var random_dir = available_dirs[randi() % available_dirs.size()]
+		move(random_dir)
+		
+		# Remember this position
+		previous_positions.append(map_pos)
+		if previous_positions.size() > MAX_MEMORY:
+			previous_positions.pop_front()
 
 func handle_player_input():
 	var dir = null
@@ -215,10 +368,10 @@ func check_for_collectibles():
 
 # Modify the _on_ThiefCar_area_entered function
 func _on_ThiefCar_area_entered(area):
+	print("ThiefCar entered by: ", area.name)  # Debug line
 	if area == get_parent().police and not special_active:
-		# Trigger role switch regardless of who's controlling whom
+		print("Caught by police!")  # Debug line
 		get_parent().on_thief_caught()
-		# Play catch sound
 		$CaughtSound.play()
 
 func apply_speed_boost(boost_amount, duration):

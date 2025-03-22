@@ -5,6 +5,8 @@ const E = 0x2
 const S = 0x4
 const W = 0x8
 
+onready var minimap = $Minimap
+
 # Define chunk size and management variables
 const CHUNK_SIZE = 4
 const VISIBLE_CHUNKS = 4 # How many chunks to keep loaded
@@ -40,6 +42,13 @@ onready var chase_sound = $ChaseSound
 onready var score_sound = $ScoreSound
 
 func _ready():
+	
+	var minimap_scene = preload("res://Scenes/Minimap.tscn").instance()
+	minimap_scene.name = "Minimap"
+	minimap_scene.position = Vector2(20, 20)  # Position in top-left corner
+	add_child(minimap_scene)
+	
+	
 	print("Game starting...")
 	randomize()
 	is_player_thief = true
