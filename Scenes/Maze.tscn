@@ -1,0 +1,532 @@
+[gd_scene load_steps=78 format=2]
+
+[ext_resource path="res://assets/tiles/iso_roads.tres" type="TileSet" id=1]
+[ext_resource path="res://Scenes/TheifCar.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Police.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scripts/Maze.gd" type="Script" id=4]
+[ext_resource path="res://assets/UI/police_icon.png" type="Texture" id=5]
+[ext_resource path="res://assets/effects/2.png" type="Texture" id=6]
+[ext_resource path="res://assets/Cars/siren8.png" type="Texture" id=7]
+[ext_resource path="res://assets/Sounds/coin.wav" type="AudioStream" id=13]
+[ext_resource path="res://Scripts/UI.gd" type="Script" id=14]
+
+[sub_resource type="AtlasTexture" id=2]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 0, 0, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=3]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 100, 0, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=4]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 200, 0, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=5]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 300, 0, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=6]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 400, 0, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=7]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 500, 0, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=8]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 600, 0, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=9]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 700, 0, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=10]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 0, 100, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=11]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 100, 100, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=12]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 200, 100, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=13]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 300, 100, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=14]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 400, 100, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=15]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 500, 100, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=16]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 600, 100, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=17]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 700, 100, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=18]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 0, 200, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=19]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 100, 200, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=20]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 200, 200, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=21]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 300, 200, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=22]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 400, 200, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=23]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 500, 200, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=24]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 600, 200, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=25]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 700, 200, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=26]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 0, 300, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=27]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 100, 300, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=28]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 200, 300, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=29]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 300, 300, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=30]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 400, 300, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=31]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 500, 300, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=32]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 600, 300, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=33]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 700, 300, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=34]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 0, 400, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=35]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 100, 400, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=36]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 200, 400, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=37]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 300, 400, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=38]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 400, 400, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=39]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 500, 400, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=40]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 600, 400, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=41]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 700, 400, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=42]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 0, 500, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=43]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 100, 500, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=44]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 200, 500, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=45]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 300, 500, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=46]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 400, 500, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=47]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 500, 500, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=48]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 600, 500, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=49]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 700, 500, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=50]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 0, 600, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=51]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 100, 600, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=52]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 200, 600, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=53]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 300, 600, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=54]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 400, 600, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=55]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 500, 600, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=56]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 600, 600, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=57]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 700, 600, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=58]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 0, 700, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=59]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 100, 700, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=60]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 200, 700, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=61]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 300, 700, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=62]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 400, 700, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=63]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 500, 700, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=64]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 600, 700, 100, 100 )
+
+[sub_resource type="AtlasTexture" id=65]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 700, 700, 100, 100 )
+
+[sub_resource type="SpriteFrames" id=66]
+animations = [ {
+"frames": [ SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), SubResource( 14 ), SubResource( 15 ), SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 19 ), SubResource( 20 ), SubResource( 21 ), SubResource( 22 ), SubResource( 23 ), SubResource( 24 ), SubResource( 25 ), SubResource( 26 ), SubResource( 27 ), SubResource( 28 ), SubResource( 29 ), SubResource( 30 ), SubResource( 31 ), SubResource( 32 ), SubResource( 33 ), SubResource( 34 ), SubResource( 35 ), SubResource( 36 ), SubResource( 37 ), SubResource( 38 ), SubResource( 39 ), SubResource( 40 ), SubResource( 41 ), SubResource( 42 ), SubResource( 43 ), SubResource( 44 ), SubResource( 45 ), SubResource( 46 ), SubResource( 47 ), SubResource( 48 ), SubResource( 49 ), SubResource( 50 ), SubResource( 51 ), SubResource( 52 ), SubResource( 53 ), SubResource( 54 ), SubResource( 55 ), SubResource( 56 ), SubResource( 57 ), SubResource( 58 ), SubResource( 59 ), SubResource( 60 ), SubResource( 61 ), SubResource( 62 ), SubResource( 63 ), SubResource( 64 ), SubResource( 65 ) ],
+"loop": true,
+"name": "RoleAnimation",
+"speed": 5.0
+} ]
+
+[sub_resource type="Animation" id=67]
+resource_name = "fade_in"
+tracks/0/type = "value"
+tracks/0/path = NodePath("UI/MessagesPanel:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.1, 0.9 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ false, true ]
+}
+
+[sub_resource type="Animation" id=68]
+resource_name = "fade_out"
+tracks/0/type = "value"
+tracks/0/path = NodePath("UI/MessagesPanel:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.1, 0.9 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+
+[sub_resource type="SpriteFrames" id=69]
+animations = [ {
+"frames": [ ExtResource( 7 ) ],
+"loop": true,
+"name": "show_game_over",
+"speed": 5.0
+} ]
+
+[node name="Roads" type="Node2D"]
+script = ExtResource( 4 )
+
+[node name="TileMap" type="TileMap" parent="."]
+mode = 1
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 100, 50 )
+cell_custom_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+format = 1
+tile_data = PoolIntArray( 0, 0, 0, 1, 3, 0, 65536, 10, 0, 131072, 12, 0, 131073, 5, 0 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="UI" type="Control" parent="UILayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 14 )
+
+[node name="GameOverPanel" type="Panel" parent="UILayer/UI"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -67.5
+margin_top = -20.0
+margin_right = 67.5
+margin_bottom = 20.0
+
+[node name="ResultLabel" type="Label" parent="UILayer/UI/GameOverPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -36.5
+margin_top = -7.0
+margin_right = 36.5
+margin_bottom = 7.0
+text = "Game Over"
+
+[node name="ScorePanel" type="Panel" parent="UILayer/UI"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = 402.0
+margin_top = 17.0
+margin_right = 490.0
+margin_bottom = 57.0
+
+[node name="Score" type="Label" parent="UILayer/UI/ScorePanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.5
+margin_top = -7.0
+margin_right = 20.5
+margin_bottom = 7.0
+text = "SCORE"
+
+[node name="TimerBar" type="ProgressBar" parent="UILayer/UI"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = 370.0
+margin_top = 69.0
+margin_right = 410.0
+margin_bottom = 83.0
+
+[node name="RolePanel" type="Panel" parent="UILayer/UI"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -95.0
+margin_top = 66.0
+margin_right = -40.0
+margin_bottom = 121.0
+
+[node name="RoleLabel" type="Label" parent="UILayer/UI/RolePanel"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -20.0
+margin_top = -14.0
+margin_right = 20.0
+text = "Police"
+
+[node name="RoleIcon" type="Sprite" parent="UILayer/UI/RolePanel"]
+position = Vector2( 26, 22 )
+texture = ExtResource( 5 )
+
+[node name="MessagesPanel" type="Panel" parent="UILayer/UI"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -192.5
+margin_top = 51.0
+margin_right = 192.5
+margin_bottom = 91.0
+
+[node name="Message" type="Label" parent="UILayer/UI/MessagesPanel"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 0.5
+margin_top = -7.0
+margin_right = 56.5
+margin_bottom = 7.0
+text = "Message"
+align = 1
+valign = 1
+
+[node name="MessageTimer" type="Timer" parent="UILayer/UI"]
+wait_time = 10.0
+
+[node name="RoleAnimation" type="AnimatedSprite" parent="UILayer/UI"]
+visible = false
+position = Vector2( 955, 141 )
+rotation = -1.57079
+frames = SubResource( 66 )
+animation = "RoleAnimation"
+
+[node name="MessageAnimation" type="AnimationPlayer" parent="UILayer/UI"]
+root_node = NodePath("../..")
+anims/fade_in = SubResource( 67 )
+anims/fade_out = SubResource( 68 )
+
+[node name="GameOverAnimation" type="AnimatedSprite" parent="UILayer/UI"]
+frames = SubResource( 69 )
+animation = "show_game_over"
+
+[node name="DefeatSound" type="AudioStreamPlayer2D" parent="UILayer/UI"]
+
+[node name="ThiefCar" parent="." instance=ExtResource( 2 )]
+
+[node name="PoliceCar" parent="." instance=ExtResource( 3 )]
+
+[node name="SwitchRoleSound" type="AudioStreamPlayer2D" parent="."]
+
+[node name="ChaseSound" type="AudioStreamPlayer2D" parent="."]
+
+[node name="ScoreSound" type="AudioStreamPlayer2D" parent="."]
+
+[node name="CollectSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 13 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+zoom = Vector2( 0.5, 0.5 )
+
+[node name="BackgroundMusic" type="AudioStreamPlayer" parent="."]
+
+[node name="SwitchEffect" type="CPUParticles2D" parent="."]
+
+[node name="Navigation2D" type="Navigation2D" parent="."]

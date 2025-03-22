@@ -1,0 +1,8 @@
+[gd_scene format=2]
+
+[node name="TireDust" type="CPUParticles2D"]
+rotation = -1.57079
+emitting = false
+one_shot = true
+emission_shape = 2
+emission_rect_extents = Vector2( 1, 1 )

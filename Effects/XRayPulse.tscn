@@ -1,0 +1,103 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/IsoTruck/carRed6_001.png" type="Texture" id=1]
+
+[sub_resource type="Shader" id=1]
+code = "/* -----------------
+X-ray shader by Michael Watt - 2D Version
+Converted from the original spatial shader
+MIT License
+----------------- */
+
+shader_type canvas_item;
+render_mode unshaded;
+
+// Options for testing different effects
+uniform bool enable_glow = false;
+uniform bool enable_lines = false;
+uniform bool enable_flicker = false;
+uniform bool enable_pattern = false;
+
+// Used for Magic and SciFi effects
+uniform vec4 base_color : hint_color = vec4(0.0, 1.0, 0.0, 1.0);
+uniform vec4 glow_color : hint_color = vec4(0.5, 0.75, 1.0, 1.0);
+uniform float glow_intensity : hint_range(0, 20) = 4.5;
+uniform float glow_amount : hint_range(0, 20) = 4.5;
+
+// Used for SciFi effect
+uniform float flickering : hint_range(0, 1) = 0.55;
+uniform sampler2D static_texture;
+uniform float line_width : hint_range(0, 1) = 0.005;
+uniform float line_blur : hint_range(0, 1) = 0.2;
+uniform float line_speed : hint_range(-1, 1) = 0.02;
+uniform bool straight_lines = true;
+uniform float interrupt_width : hint_range(0, 1) = 0.5;
+uniform float interrupt_blur : hint_range(0, 1) = 0.25;
+uniform float interrupt_speed : hint_range(-1, 1) = 0.2;
+
+// Used for Pattern effect
+uniform sampler2D pattern_texture;
+
+// Simplified fresnel effect for 2D (using UV edges)
+vec3 fresnel_glow(float amount, float intensity, vec3 color, vec2 uv) {
+    float edge = min(uv.x, uv.y);
+    edge = min(edge, 1.0 - uv.x);
+    edge = min(edge, 1.0 - uv.y);
+    return pow(1.0 - edge, amount) * color * intensity;
+}
+
+void fragment() {
+    vec2 canvas = straight_lines ? SCREEN_UV : UV;
+    vec2 lines = vec2(clamp(sin((TIME * line_speed + canvas.y) / line_width), line_blur, 1.0 - line_blur), canvas.x);
+    vec2 interrupts = vec2(clamp(sin((TIME * interrupt_speed + canvas.y) / interrupt_width * 3.0), interrupt_blur, 1.0 - interrupt_blur), canvas.x);
+    
+    float flicker = enable_flicker ? 
+        clamp(fract(cos(TIME) * 43758.5453123), flickering, 1.0) : 
+        1.0;
+    
+    vec4 imgtex = enable_pattern ? 
+        texture(pattern_texture, SCREEN_UV) : 
+        base_color;
+    
+    imgtex *= flicker * texture(static_texture, lines * interrupts);
+    vec3 imgtex_color = vec3(imgtex.r, imgtex.g, imgtex.b);
+    
+    COLOR.rgb = imgtex_color;
+    
+    if(enable_glow) {
+        vec3 fresnel_color = vec3(glow_color.r, glow_color.g, glow_color.b);
+        vec3 fresnel = fresnel_glow(glow_amount, glow_intensity, fresnel_color, UV);
+        COLOR.rgb += fresnel;
+    }
+    
+    // Emission-like effect in 2D by adding to color
+    COLOR.rgb += glow_amount * vec3(glow_color.r, glow_color.g, glow_color.b) * 0.1;
+    
+    if(enable_lines)
+        COLOR.a = lines.x * interrupts.x;
+    else
+        COLOR.a = base_color.a;
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/enable_glow = false
+shader_param/enable_lines = false
+shader_param/enable_flicker = false
+shader_param/enable_pattern = false
+shader_param/base_color = Color( 0, 1, 0, 1 )
+shader_param/glow_color = Color( 0.5, 0.75, 1, 1 )
+shader_param/glow_intensity = 4.5
+shader_param/glow_amount = 4.5
+shader_param/flickering = 0.55
+shader_param/line_width = 0.005
+shader_param/line_blur = 0.2
+shader_param/line_speed = 0.02
+shader_param/straight_lines = true
+shader_param/interrupt_width = 0.5
+shader_param/interrupt_blur = 0.25
+shader_param/interrupt_speed = 0.2
+
+[node name="Sprite" type="Sprite"]
+material = SubResource( 2 )
+texture = ExtResource( 1 )
