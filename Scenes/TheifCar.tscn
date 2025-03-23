@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Scripts/ThiefCar.gd" type="Script" id=1]
 [ext_resource path="res://assets/IsoTruck/carRed6_007.png" type="Texture" id=2]
@@ -9,7 +9,6 @@
 [ext_resource path="res://assets/IsoTruck/carRed6_008.png" type="Texture" id=7]
 [ext_resource path="res://assets/IsoTruck/carRed6_000.png" type="Texture" id=8]
 [ext_resource path="res://assets/IsoTruck/carRed6_006.png" type="Texture" id=9]
-[ext_resource path="res://assets/effects/Smoke &amp; Fire.png" type="Texture" id=10]
 [ext_resource path="res://Assets/Sounds/engine-loop-1.wav" type="AudioStream" id=11]
 [ext_resource path="res://Assets/Sounds/loop_0.wav" type="AudioStream" id=12]
 
@@ -58,35 +57,6 @@ animations = [ {
 
 [sub_resource type="CircleShape2D" id=2]
 
-[sub_resource type="Shader" id=3]
-code = "shader_type canvas_item;
-
-const float pi = 3.14156;
-
-uniform float dist = 16.;
-uniform float alpha : hint_range(0., 1.) = 1.;
-
-void fragment() {
-	vec2 backgroundUV = FRAGCOORD.xy * SCREEN_PIXEL_SIZE.xy;
-	
-	vec2 offsetR = vec2(dist * SCREEN_PIXEL_SIZE.x * cos(TIME * 2. * pi),        dist * SCREEN_PIXEL_SIZE.x * cos(TIME*0.7 * 2. * pi));
-	vec2 offsetG = vec2(dist * SCREEN_PIXEL_SIZE.x * cos(1. + (TIME * 2. * pi)), dist * SCREEN_PIXEL_SIZE.x * cos(3. + (TIME*0.7 * 2. * pi)));
-	vec2 offsetB = vec2(dist * SCREEN_PIXEL_SIZE.x * cos(TIME * 1.5 * pi),       dist * SCREEN_PIXEL_SIZE.x * cos(TIME*0.9 * 2. * pi));
-	
-	vec4 backColR = texture(SCREEN_TEXTURE, SCREEN_UV + offsetR);
-	vec4 backColG = texture(SCREEN_TEXTURE, SCREEN_UV + offsetG);
-	vec4 backColB = texture(SCREEN_TEXTURE, SCREEN_UV + offsetB);
-	
-	vec4 texCol = texture(TEXTURE, UV);
-	
-	COLOR = mix(texCol, texCol.a * vec4(backColR.r, backColG.g, backColB.b, 1.0), alpha);
-}"
-
-[sub_resource type="ShaderMaterial" id=4]
-shader = SubResource( 3 )
-shader_param/dist = 16.0
-shader_param/alpha = 1.0
-
 [node name="TheifCar" type="Area2D"]
 script = ExtResource( 1 )
 
@@ -100,25 +70,9 @@ shape = SubResource( 2 )
 
 [node name="Tween" type="Tween" parent="."]
 
-[node name="TrailEffect" type="CPUParticles2D" parent="."]
-rotation = -1.57079
-emitting = false
-amount = 1
-lifetime = 0.01
-one_shot = true
-texture = ExtResource( 10 )
-
 [node name="MoveSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 11 )
 volume_db = -20.0
-
-[node name="InvisibilityEffect" type="CPUParticles2D" parent="."]
-visible = false
-material = SubResource( 4 )
-emitting = false
-amount = 1
-lifetime = 0.01
-one_shot = true
 
 [node name="SpecialTimer" type="Timer" parent="."]
 wait_time = 5.0

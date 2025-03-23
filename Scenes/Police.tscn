@@ -109,20 +109,6 @@ shape = SubResource( 4 )
 
 [node name="Tween" type="Tween" parent="."]
 
-[node name="TrailEffect" type="CPUParticles2D" parent="."]
-visible = false
-rotation = -1.57079
-amount = 1
-lifetime = 0.01
-one_shot = true
-
-[node name="XRayEffect" type="CPUParticles2D" parent="."]
-visible = false
-emitting = false
-amount = 1
-lifetime = 0.01
-one_shot = true
-
 [node name="SpecialTimer" type="Timer" parent="."]
 
 [node name="SpecialSound" type="AudioStreamPlayer2D" parent="."]

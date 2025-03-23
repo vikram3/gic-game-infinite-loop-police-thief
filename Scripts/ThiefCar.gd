@@ -24,7 +24,6 @@ var moving = false
 var drift_factor = 0.2
 var boost_active = false
 var boost_timer = 0
-var trail_effect = false
 var chase_timer = 0
 
 var special_active = false
@@ -33,9 +32,6 @@ var INVINCIBILITY_DURATION = 5.0
 signal collected_item(item_type, value)
 
 func _ready():
-#	trail_effect = $TrailEffect
-#	trail_effect.emitting = false
-	
 	if not is_connected("area_entered", self, "_on_ThiefCar_area_entered"):
 		connect("area_entered", self, "_on_ThiefCar_area_entered")
 	$AnimatedSprite.play("s")
@@ -43,11 +39,9 @@ func _ready():
 func _process(delta):
 	if boost_active:
 		boost_timer -= delta
-#		trail_effect.emitting = false
 		if boost_timer <= 0:
 			boost_active = false
 			speed = base_speed
-#			trail_effect.emitting = false
 	
 	if get_parent().is_player_thief and not moving:
 		handle_player_input()
@@ -60,14 +54,9 @@ func _process(delta):
 
 func switch_role():
 	special_active = true
-	
-	$InvisibilityEffect.emitting = false
 	modulate.a = 0.5
-	
 	$SpecialTimer.start(INVINCIBILITY_DURATION)
-	
 	$SpecialSound.play()
-	
 	print("Role switched - invincibility active for 5 seconds!")
 
 func run_away_from_player(delta):
@@ -273,14 +262,6 @@ func move(dir):
 	$Tween.start()
 	
 	$MoveSound.play()
-	
-	create_movement_effect(prev_map_pos)
-
-func create_movement_effect(prev_pos):
-	var dust = preload("res://Effects/TireDust.tscn").instance()
-	dust.position = map.map_to_world(prev_pos) + Vector2(0, 20)
-	dust.emitting = false
-	get_parent().add_child(dust)
 
 func get_alternative_directions(dir):
 	match dir:
@@ -296,7 +277,6 @@ func can_move(dir):
 
 func _on_Tween_tween_completed(object, key):
 	moving = false
-	
 	check_for_collectibles()
 
 func check_for_collectibles():
@@ -322,20 +302,14 @@ func apply_speed_boost(boost_amount, duration):
 	boost_active = true
 	boost_timer = duration
 	speed = base_speed + boost_amount
-	trail_effect.emitting = false
 	$BoostSound.play()
 
 func activate_special():
 	special_active = true
-	
-	$InvisibilityEffect.emitting = false
 	modulate.a = 0.5
-	
 	$SpecialTimer.start(5)
-	
 	$SpecialSound.play()
 
 func _on_SpecialTimer_timeout():
 	special_active = false
-	$InvisibilityEffect.emitting = false
 	modulate.a = 1.0

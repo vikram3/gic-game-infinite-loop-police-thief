@@ -25,7 +25,6 @@ var difficulty_scaling = 1.0
 var drift_factor = 0.15
 var boost_active = false
 var boost_timer = 0
-var trail_effect = null
 
 var special_cooldown = 0
 var special_active = false
@@ -34,11 +33,7 @@ var SPECIAL_MAX_COOLDOWN = 15.0
 signal collected_item(item_type, value)
 
 func _ready():
-	trail_effect = $TrailEffect
-	trail_effect.emitting = false
-	
 	$AnimatedSprite.play("s")
-	
 	$SirenLight.visible = true
 
 func _process(delta):
@@ -47,11 +42,9 @@ func _process(delta):
 	
 	if boost_active:
 		boost_timer -= delta
-		trail_effect.emitting = false
 		if boost_timer <= 0:
 			boost_active = false
 			speed = base_speed
-			trail_effect.emitting = false
 	
 	$SirenLight.modulate.a = 0.5 + abs(sin(OS.get_ticks_msec() * 0.005)) * 0.5
 	
@@ -137,7 +130,7 @@ func chase_thief_advanced():
 	else:
 		simple_chase(thief_pos)
 		frustration += 1
-		
+
 func search_in_spiral():
 	var spiral_directions = [E, S, W, W, N, N, E, E, E, S, S, S, W, W, W, W]
 	var spiral_index = int(chase_timer * 2) % spiral_directions.size()
@@ -233,9 +226,7 @@ func get_lowest_fscore_node(nodes, f_scores):
 
 func improved_heuristic(a, b):
 	var manhattan = abs(a.x - b.x) + abs(a.y - b.y)
-	
 	var random_factor = randf() * 0.2
-	
 	return manhattan + random_factor
 	
 func find_furthest_point_toward_target(came_from, target_pos):
@@ -275,6 +266,7 @@ func patrol_random():
 	if not available_dirs.empty():
 		var random_dir = available_dirs[randi() % available_dirs.size()]
 		move(random_dir)
+
 func opposite_direction(dir):
 	match dir:
 		N: return S
@@ -315,14 +307,6 @@ func move(dir):
 	$Tween.start()
 	
 	$MoveSound.play()
-	
-	create_movement_effect(prev_map_pos)
-
-func create_movement_effect(prev_pos):
-	var dust = preload("res://Effects/TireDust.tscn").instance()
-	dust.position = map.map_to_world(prev_pos) + Vector2(0, 20)
-	dust.emitting = false
-	get_parent().add_child(dust)
 
 func get_alternative_directions(dir):
 	match dir:
@@ -332,14 +316,12 @@ func get_alternative_directions(dir):
 	
 func can_move(dir):
 	var t = map.get_cellv(map_pos)
-	
 	if t & dir:
 		return false
 	return true
 
 func _on_Tween_tween_completed(object, key):
 	moving = false
-	
 	check_for_collectibles()
 
 func check_for_collectibles():
@@ -358,23 +340,13 @@ func apply_speed_boost(boost_amount, duration):
 	boost_active = true
 	boost_timer = duration
 	speed = base_speed + boost_amount
-	trail_effect.emitting = false
 	$BoostSound.play()
 
 func activate_special():
 	special_active = true
 	special_cooldown = SPECIAL_MAX_COOLDOWN
-	
-	$XRayEffect.emitting = false
-	
-	var pulse = preload("res://Effects/XRayPulse.tscn").instance()
-	pulse.position = position
-	get_parent().add_child(pulse)
-	
 	$SpecialTimer.start(5.0)
-	
 	$SpecialSound.play()
 
 func _on_SpecialTimer_timeout():
 	special_active = false
-	$XRayEffect.emitting = false

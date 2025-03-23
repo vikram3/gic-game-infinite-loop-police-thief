@@ -307,10 +307,14 @@ func collect_coin(value, collector=null):
 	if collector == null:
 		score += value
 	else:
-		if (is_player_thief and collector == police) or (!is_player_thief and collector == thief):
-			score -= value
-		else:
+		# If player is thief and collector is thief (player), increase score
+		# If player is police and collector is police (player), increase score
+		if (is_player_thief and collector == thief) or (!is_player_thief and collector == police):
 			score += value
+		# If player is thief and collector is police (AI), decrease score
+		# If player is police and collector is thief (AI), decrease score
+		else:
+			score -= value
 	
 	score_sound.play()
 	UI.update_score(score)
