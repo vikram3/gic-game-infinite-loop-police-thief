@@ -21,6 +21,7 @@ _global_script_class_icons={
 [application]
 
 config/name="GIC"
+run/main_scene="res://Scenes/Maze.tscn"
 boot_splash/image="res://logoforjam.png"
 boot_splash/fullsize=false
 boot_splash/bg_color=Color( 1, 1, 1, 1 )
@@ -79,4 +80,5 @@ special={
 
 [rendering]
 
+vram_compression/import_bptc=true
 environment/default_environment="res://default_env.tres"
