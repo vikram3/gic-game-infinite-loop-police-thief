@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=18 format=2]
+[gd_resource type="TileSet" load_steps=17 format=2]
 
 [ext_resource path="res://assets/isometric_roads/crossroad.png" type="Texture" id=1]
 [ext_resource path="res://assets/isometric_roads/crossroadNSW.png" type="Texture" id=2]
@@ -17,11 +17,6 @@
 [ext_resource path="res://assets/isometric_roads/crossroadESW.png" type="Texture" id=15]
 [ext_resource path="res://assets/isometric_roads/roadSW.png" type="Texture" id=16]
 
-[sub_resource type="NavigationPolygon" id=1]
-vertices = PoolVector2Array( 76.0501, 25.5829, 89.7717, 32.7925, 61.1658, 45.1186, 49.0723, 38.3741, 48.3746, 11.3963, 24.6526, 23.0247, 13.2568, 18.1407, 38.8393, 4.41922, 34.653, 43.9558, 11.8614, 31.8622, 61.6309, 5.81464, 86.0506, 16.9779 )
-polygons = [ PoolIntArray( 0, 1, 2, 3, 4 ), PoolIntArray( 5, 6, 7, 4 ), PoolIntArray( 8, 9, 5, 4, 3 ), PoolIntArray( 10, 11, 0, 4 ) ]
-outlines = [ PoolVector2Array( 13.2568, 18.1407, 38.8393, 4.41922, 48.3746, 11.3963, 61.6309, 5.81464, 86.0506, 16.9779, 76.0501, 25.5829, 89.7717, 32.7925, 61.1658, 45.1186, 49.0723, 38.3741, 34.653, 43.9558, 11.8614, 31.8622, 24.6526, 23.0247 ) ]
-
 [resource]
 0/name = "0"
 0/texture = ExtResource( 1 )
@@ -31,7 +26,6 @@ outlines = [ PoolVector2Array( 13.2568, 18.1407, 38.8393, 4.41922, 48.3746, 11.3
 0/tile_mode = 0
 0/occluder_offset = Vector2( 50, 32.5 )
 0/navigation_offset = Vector2( 50, 32.5 )
-0/navigation = SubResource( 1 )
 0/shape_offset = Vector2( 0, 0 )
 0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
 0/shape_one_way = false

@@ -280,9 +280,6 @@ func switch_roles():
 	
 	switch_sound.play()
 	
-	$SwitchEffect.global_position = camera.global_position
-	$SwitchEffect.emitting = true
-	
 	var temp_sprite = thief.get_node("AnimatedSprite").animation
 	thief.get_node("AnimatedSprite").animation = police.get_node("AnimatedSprite").animation
 	police.get_node("AnimatedSprite").animation = temp_sprite
@@ -307,12 +304,8 @@ func collect_coin(value, collector=null):
 	if collector == null:
 		score += value
 	else:
-		# If player is thief and collector is thief (player), increase score
-		# If player is police and collector is police (player), increase score
 		if (is_player_thief and collector == thief) or (!is_player_thief and collector == police):
 			score += value
-		# If player is thief and collector is police (AI), decrease score
-		# If player is police and collector is thief (AI), decrease score
 		else:
 			score -= value
 	
