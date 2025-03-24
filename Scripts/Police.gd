@@ -13,6 +13,7 @@ var moves = {
 	W: Vector2(-1, 0)
 }
 
+var siren_enabled = true
 var siren_on_as_player = true 
 
 var map = null
@@ -32,34 +33,36 @@ var special_cooldown = 0
 var special_active = false
 var SPECIAL_MAX_COOLDOWN = 15.0
 
-# Siren audio variables
 var siren_playing = false
 var siren_fade_timer = 0.0
 var SIREN_FADE_TIME = 1.0
 var distance_for_full_volume = 5.0
-var BASE_VOLUME_DB = -10.0  # Lower base volume for the siren
+var BASE_VOLUME_DB = -10.0  
 
 signal collected_item(item_type, value)
 
 func _ready():
 	$AnimatedSprite.play("s")
 	$SirenLight.visible = true
-	# Set up siren audio player
 	setup_siren_audio()
+	
+func toggle_siren():
+	siren_enabled = !siren_enabled
+	if not siren_enabled and has_node("SirenAudio") and siren_playing:
+		$SirenAudio.stop()
+		siren_playing = false
+		siren_fade_timer = 0
 
-# Set up the siren audio player
 func setup_siren_audio():
-	# Create AudioStreamPlayer if it doesn't exist
 	if not has_node("SirenAudio"):
 		var audio_player = AudioStreamPlayer2D.new()
 		audio_player.name = "SirenAudio"
-		audio_player.bus = "SFX"  # Use SFX audio bus if available
-		audio_player.volume_db = BASE_VOLUME_DB  # Set initial volume to -20dB
+		audio_player.bus = "SFX"  
+		audio_player.volume_db = BASE_VOLUME_DB  
 		audio_player.max_distance = 1000
 		audio_player.attenuation = 2.0
 		add_child(audio_player)
 		
-		# Load siren sound - ensure this path is correct for your project
 		var siren_sound = load("res://Assets/Sounds/siren.mp3")
 		if siren_sound:
 			audio_player.stream = siren_sound
@@ -76,15 +79,11 @@ func _process(delta):
 			boost_active = false
 			speed = base_speed
 	
-	# Normal siren light effect
 	if special_active:
-		# Faster flashing for siren light during special
 		$SirenLight.modulate.a = 0.7 + abs(sin(OS.get_ticks_msec() * 0.01)) * 0.3
 	else:
-		# Normal siren light behavior
 		$SirenLight.modulate.a = 0.5 + abs(sin(OS.get_ticks_msec() * 0.005)) * 0.5
 	
-	# Update siren sound
 	update_siren_audio(delta)
 	
 	if not get_parent().is_player_thief and not moving:
@@ -93,44 +92,36 @@ func _process(delta):
 		if not moving:
 			run_police_ai(delta)
 
-# Update siren audio based on game state
 func update_siren_audio(delta):
-	# Get distance to thief
 	var distance_to_thief = get_distance_to_thief()
 	
-	# Determine if siren should be playing based on game conditions
 	var should_play_siren = false
 	
 	if get_parent().is_player_thief:
-		# AI-controlled police should play siren when actively chasing
 		should_play_siren = distance_to_thief < 12 or special_active
 	else:
-		# Player-controlled police plays siren when actively chasing or special active
 		should_play_siren = distance_to_thief < 12 or special_active
 	
 	if has_node("SirenAudio"):
 		var audio = $SirenAudio
 		
-		if should_play_siren and not siren_playing:
+		if should_play_siren and not siren_playing and siren_enabled:
 			audio.volume_db = BASE_VOLUME_DB
 			audio.play()
 			siren_playing = true
 			siren_fade_timer = 0
-		elif not should_play_siren and siren_playing:
+		elif (not should_play_siren or not siren_enabled) and siren_playing:
 			siren_fade_timer += delta
 			
-			# Fade out siren
 			if siren_fade_timer < SIREN_FADE_TIME:
 				audio.volume_db = lerp(BASE_VOLUME_DB, -80, siren_fade_timer / SIREN_FADE_TIME)
 			else:
 				audio.stop()
-				audio.volume_db = BASE_VOLUME_DB  # Reset to base volume
+				audio.volume_db = BASE_VOLUME_DB  
 				siren_playing = false
 		
-		# Adjust volume based on distance to thief if playing
 		if siren_playing and distance_to_thief > 0:
 			var volume_factor = clamp(1.0 - (distance_to_thief / (distance_for_full_volume * 3)), 0.2, 1.0)
-			# Apply this factor to the base volume (converts linear factor to dB)
 			audio.volume_db = BASE_VOLUME_DB + linear2db(volume_factor)
 
 func handle_player_input():
@@ -148,7 +139,9 @@ func handle_player_input():
 	if Input.is_action_just_pressed("special") and special_cooldown <= 0:
 		activate_special()
 		
-	
+	if Input.is_action_just_pressed("toggle_siren"):  
+			toggle_siren()
+				
 	if dir != null:
 		move(dir)
 
@@ -420,7 +413,7 @@ func apply_speed_boost(boost_amount, duration):
 	boost_active = true
 	boost_timer = duration
 	speed = base_speed + boost_amount
-	$BoostSound.play()
+	$BoostSound
 
 func activate_special():
 	special_active = true
@@ -428,42 +421,31 @@ func activate_special():
 	$SpecialTimer.start(5.0)
 	$SpecialSound.play()
 	
-	# Store original speed to restore it later
 	var original_speed = speed
 	
-	# Significant speed boost during special
-	speed = base_speed * 1.8  # 80% speed boost
+	speed = base_speed * 1.8
 	
-	# Visual indication using existing sprite
-	$AnimatedSprite.modulate = Color(0.2, 0.2, 1.0, 1.0)  # Blue tint
+	$AnimatedSprite.modulate = Color(0.2, 0.2, 1.0, 1.0)
 	
-	# Enhance siren using existing audio
-	if has_node("SirenAudio"):
-		$SirenAudio.volume_db = BASE_VOLUME_DB + 5  # Louder siren
+	if has_node("SirenAudio") and siren_enabled:
+		$SirenAudio.volume_db = BASE_VOLUME_DB + 5
 		$SirenAudio.play()
 		siren_playing = true
 	
-	# Make the siren light flash faster
-	$SirenLight.modulate.a = 1.0  # Full brightness
+	$SirenLight.modulate.a = 1.0
 	
-	# Affect thief if in range
 	slow_nearby_thief()
 
-# Add this function to slow the thief when special is active
 func slow_nearby_thief():
 	var thief = get_parent().thief
-	if thief and get_distance_to_thief() < 8:  # Extended range during special
-		# Slow the thief by directly modifying their speed
+	if thief and get_distance_to_thief() < 8:
 		var original_thief_speed = thief.speed
-		thief.speed = thief.speed * 0.6  # Slow to 60%
+		thief.speed = thief.speed * 0.6
 		
-		# Visual indication that thief is affected
 		thief.get_node("AnimatedSprite").modulate = Color(0.5, 0.5, 1.0)
 		
-		# Use a timer to reset the thief's speed
 		yield(get_tree().create_timer(3.0), "timeout")
 		
-		# Only reset if special is still active and thief exists
 		if is_instance_valid(thief):
 			thief.speed = original_thief_speed
 			thief.get_node("AnimatedSprite").modulate = Color(1, 1, 1)
@@ -471,13 +453,10 @@ func slow_nearby_thief():
 func _on_SpecialTimer_timeout():
 	special_active = false
 	
-	# Reset visual effects
-	$AnimatedSprite.modulate = Color(1, 1, 1)  # Reset tint
+	$AnimatedSprite.modulate = Color(1, 1, 1)
 	
-	# Reset speed to normal
 	speed = base_speed
 	
-	# If player isn't actively chasing, stop the siren when special ends
 	if not get_parent().is_player_thief or get_distance_to_thief() > 12:
 		if has_node("SirenAudio") and siren_playing:
 			siren_fade_timer = 0

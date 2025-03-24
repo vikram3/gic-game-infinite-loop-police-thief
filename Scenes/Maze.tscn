@@ -505,6 +505,24 @@ animation = "show_game_over"
 
 [node name="DefeatSound" type="AudioStreamPlayer2D" parent="UILayer/UI"]
 
+[node name="Panel" type="Panel" parent="UILayer/UI"]
+margin_left = 907.0
+margin_top = 146.0
+margin_right = 1010.0
+margin_bottom = 185.0
+
+[node name="Label" type="Label" parent="UILayer/UI/Panel"]
+margin_right = 66.0
+margin_bottom = 14.0
+text = "R - Restart"
+
+[node name="Label2" type="Label" parent="UILayer/UI/Panel"]
+margin_left = -1.0
+margin_top = 19.0
+margin_right = 92.0
+margin_bottom = 33.0
+text = "F - Siren on/off"
+
 [node name="ThiefCar" parent="." instance=ExtResource( 2 )]
 
 [node name="PoliceCar" parent="." instance=ExtResource( 3 )]

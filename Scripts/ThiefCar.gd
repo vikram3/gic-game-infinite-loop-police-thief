@@ -27,7 +27,7 @@ var boost_timer = 0
 var chase_timer = 0
 
 var special_active = false
-var INVINCIBILITY_DURATION = 5.0
+var INVINCIBILITY_DURATION = 2.0
 
 signal collected_item(item_type, value)
 

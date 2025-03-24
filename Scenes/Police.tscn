@@ -113,7 +113,7 @@ shape = SubResource( 4 )
 
 [node name="SpecialSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 12 )
-volume_db = -20.0
+volume_db = -30.0
 
 [node name="BoostSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 12 )
