@@ -69,10 +69,12 @@ func _ready():
 	active_chunks.append(chunk_pos)
 	
 	update_camera()
-	$BackgroundMusic.play()
 	print("Initialization complete")
 
 func _process(delta):
+	
+	if Input.is_action_just_pressed("Restart"):
+		get_tree().reload_current_scene()
 	UI.update_score(score)
 	
 	chase_time += delta
@@ -335,4 +337,4 @@ func calculate_catch_bonus():
 	var time_ratio = 1.0 - (role_switch_timer / MAX_ROLE_TIME)
 	var bonus_points = int(100 * time_ratio)
 	score += bonus_points
-	UI.show_message("Quick Catch Bonus: " + str(bonus_points) + " points!", 2.0)
+	UI.show_catch_bonus_message(bonus_points)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Scripts/ThiefCar.gd" type="Script" id=1]
 [ext_resource path="res://assets/IsoTruck/carRed6_007.png" type="Texture" id=2]
@@ -10,7 +10,6 @@
 [ext_resource path="res://assets/IsoTruck/carRed6_000.png" type="Texture" id=8]
 [ext_resource path="res://assets/IsoTruck/carRed6_006.png" type="Texture" id=9]
 [ext_resource path="res://Assets/Sounds/engine-loop-1.wav" type="AudioStream" id=11]
-[ext_resource path="res://Assets/Sounds/loop_0.wav" type="AudioStream" id=12]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -78,15 +77,12 @@ volume_db = -20.0
 wait_time = 5.0
 
 [node name="SpecialSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 12 )
 volume_db = -20.0
 
 [node name="BoostSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 12 )
 volume_db = -20.0
 
 [node name="CaughtSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 12 )
 volume_db = -10.0
 
 [node name="ChaseTimer" type="Timer" parent="."]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=81 format=2]
+[gd_scene load_steps=78 format=2]
 
 [ext_resource path="res://iso_roads.tres" type="TileSet" id=1]
 [ext_resource path="res://Scenes/TheifCar.tscn" type="PackedScene" id=2]
@@ -7,10 +7,7 @@
 [ext_resource path="res://assets/UI/police_icon.png" type="Texture" id=5]
 [ext_resource path="res://assets/effects/2.png" type="Texture" id=6]
 [ext_resource path="res://assets/Cars/siren8.png" type="Texture" id=7]
-[ext_resource path="res://Assets/Sounds/FoxSynergy - Stone Path to Madness.mp3" type="AudioStream" id=8]
 [ext_resource path="res://Assets/Sounds/coin.wav" type="AudioStream" id=9]
-[ext_resource path="res://Assets/Sounds/loop_0.wav" type="AudioStream" id=10]
-[ext_resource path="res://Assets/Sounds/siren.mp3" type="AudioStream" id=12]
 [ext_resource path="res://Scripts/UI.gd" type="Script" id=14]
 
 [sub_resource type="AtlasTexture" id=2]
@@ -479,10 +476,10 @@ margin_bottom = 91.0
 [node name="Message" type="Label" parent="UILayer/UI/MessagesPanel"]
 anchor_top = 0.5
 anchor_bottom = 0.5
-margin_left = 0.5
-margin_top = -7.0
-margin_right = 56.5
-margin_bottom = 7.0
+margin_left = 1.0
+margin_top = -19.0
+margin_right = 381.0
+margin_bottom = 17.0
 text = "Message"
 align = 1
 valign = 1
@@ -507,18 +504,12 @@ frames = SubResource( 69 )
 animation = "show_game_over"
 
 [node name="DefeatSound" type="AudioStreamPlayer2D" parent="UILayer/UI"]
-stream = ExtResource( 10 )
 
 [node name="ThiefCar" parent="." instance=ExtResource( 2 )]
 
 [node name="PoliceCar" parent="." instance=ExtResource( 3 )]
 
-[node name="SwitchRoleSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 12 )
-volume_db = -10.0
-
 [node name="ChaseSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 10 )
 
 [node name="ScoreSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 9 )
@@ -532,8 +523,9 @@ current = true
 zoom = Vector2( 0.5, 0.5 )
 
 [node name="BackgroundMusic" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 8 )
 volume_db = -10.0
 
 [node name="CaptureSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 9 )
+
+[node name="SwitchRoleSound" type="AudioStreamPlayer2D" parent="."]

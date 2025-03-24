@@ -340,5 +340,3 @@ func _on_toggle_button_pressed():
 		if child is Button:
 			continue
 		child.visible = minimap_visible
-	
-	visible = true

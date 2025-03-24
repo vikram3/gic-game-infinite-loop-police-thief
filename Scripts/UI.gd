@@ -14,6 +14,33 @@ var current_score = 0
 var target_score = 0
 var score_animation_speed = 5
 
+# Arrays of funny messages for each role - SHORTER VERSIONS
+var thief_messages = [
+	"You're the THIEF! Grab and dash!",
+	"THIEF MODE! Steal everything!",
+	"THIEF TIME! Don't get caught!",
+	"SNEAKY THIEF! Be invisible!",
+	"THIEF ALERT! Coins need stealing!",
+	"MASTER THIEF! Show your skills!",
+	"You're a THIEF! Fingers ready!",
+	"THIEF MODE! Crime pays... sometimes!",
+	"THIEF LIFE! Run faster!",
+	"THIEF DUTY! Pockets aren't full yet!"
+]
+
+var police_messages = [
+	"POLICE! Catch that thief!",
+	"OFFICER ON DUTY! Chase time!",
+	"POLICE MODE! Serve justice!",
+	"You're the LAW now! Go go go!",
+	"POLICE POWER! Make an arrest!",
+	"COP MODE! Donuts later!",
+	"POLICE PURSUIT! Run faster!",
+	"OFFICER! Badge with purpose!",
+	"POLICE! Justice incoming!",
+	"LAW ENFORCEMENT! Thief spotted!"
+]
+
 func _ready():
 	score_label.text = "0"
 	timer_bar.value = 100
@@ -21,6 +48,9 @@ func _ready():
 	
 	messages_panel.visible = false
 	show_message("Game started! You're the THIEF!", 3.0)
+	
+	# Make sure text wrapping is enabled on the message label
+	message_label.autowrap = true
 
 func _process(delta):
 	if current_score < target_score:
@@ -49,17 +79,25 @@ func update_role(is_thief):
 		role_indicator.modulate = Color(1.0, 0.8, 0.2)
 		role_icon.texture = preload("res://Assets/UI/thief_icon.jpg")
 		
-		show_message("You're the THIEF! Escape the police and collect coins!", 3.0)
+		# Get a random thief message
+		var random_message = thief_messages[randi() % thief_messages.size()]
+		show_message(random_message, 3.0)
 	else:
 		role_indicator.text = "POLICE"
 		role_indicator.modulate = Color(0.2, 0.4, 1.0)
 		role_icon.texture = preload("res://Assets/UI/police_icon.png")
 		
-		show_message("You're the POLICE! Catch the thief!", 3.0)
+		# Get a random police message
+		var random_message = police_messages[randi() % police_messages.size()]
+		show_message(random_message, 3.0)
 	
 	$RolePanel.visible = true
 	
 	$RoleAnimation.play("RoleAnimation")
+
+func show_catch_bonus_message(bonus_points):
+	# Just update the score without any message
+	update_score(target_score + bonus_points)
 
 func show_message(text, duration=3.0):
 	print("UI: Showing message: ", text)

@@ -18,8 +18,8 @@ var moves = {
 
 var map = null
 var map_pos = Vector2()
-var base_speed = 0.5
-var speed = 0.5
+var base_speed = 0.6
+var speed = 0.6
 var moving = false
 var drift_factor = 0.2
 var boost_active = false

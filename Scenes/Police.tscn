@@ -10,7 +10,7 @@
 [ext_resource path="res://assets/IsoTruck/carRed6_000.png" type="Texture" id=8]
 [ext_resource path="res://assets/IsoTruck/carRed6_006.png" type="Texture" id=9]
 [ext_resource path="res://assets/Cars/siren8.png" type="Texture" id=10]
-[ext_resource path="res://Assets/Sounds/engine-loop-1.wav" type="AudioStream" id=11]
+[ext_resource path="res://Assets/Sounds/siren.mp3" type="AudioStream" id=11]
 [ext_resource path="res://Assets/Sounds/Item2A.wav" type="AudioStream" id=12]
 
 [sub_resource type="SpriteFrames" id=3]
@@ -120,7 +120,6 @@ stream = ExtResource( 12 )
 volume_db = -20.0
 
 [node name="MoveSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 11 )
 volume_db = -20.0
 
 [node name="SirenLight" type="Sprite" parent="."]
@@ -128,5 +127,9 @@ material = SubResource( 6 )
 position = Vector2( 1, -10 )
 texture = ExtResource( 10 )
 region_filter_clip = true
+
+[node name="SirenAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 11 )
+volume_db = -10.0
 
 [connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]
